@@ -8,14 +8,44 @@ class Controller:
         # the model, which implements the logic of the program and holds the data
         self._model = model
 
+
+
     def fillDDGenre(self):
-        pass
+        genres = self._model.getGenres()
+        for g in genres:
+            self._view._ddGenre.options.append(ft.dropdown.Option(g))
+        self._view.update_page()
+
+    def fillDDArtist(self):
+        self._view._ddArtist.options.clear()
+        artist = self._model.getArtists()
+        for a in artist:
+            self._view._ddArtist.options.append(ft.dropdown.Option(key=a.ArtistId, text=a.Name))
+        self._view.update_page()
 
     def handleCreaGrafo(self, e):
-        pass
+        self._model.buildGraph(self._view._ddGenre.value)
+        self.fillDDArtist()
+        self._view.txt_result.controls.clear()
+        self._view.txt_result.controls.append(ft.Text("Grafo correttamente creato!", color="green"))
+        self._view.txt_result.controls.append(ft.Text(f"Numero di nodi: {self._model.getNumNodes()}", color="green"))
+        self._view.txt_result.controls.append(ft.Text(f"Numero di archi: {self._model.getNumEdges()}", color="green"))
 
-    def handleCreaGrafo(self,e):
-        pass
+        bestartist, best = self._model.getBestArtist()
+
+        self._view.txt_result.controls.append(ft.Text(f"Artista più influente: {bestartist}, con influenza: {best}"))
+
+        topEdges = self._model.getTop5Edges()
+
+        self._view.txt_result.controls.append(ft.Text("Top 5 archi:"))
+
+        for u, v, data in topEdges:
+            self._view.txt_result.controls.append(
+                ft.Text(f"{u.Name} -> {v.Name} : {data['weight']}"))
+
+        self._view.update_page()
+
+
 
     def handleCammino(self,e):
         pass
