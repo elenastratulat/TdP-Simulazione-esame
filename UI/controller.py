@@ -48,4 +48,10 @@ class Controller:
 
 
     def handleCammino(self,e):
-        pass
+        bestPath = self._model.getPath(self._view._ddArtist.value)
+        self._view.txt_result.controls.append(ft.Text(f"Cammino massimo trovato ({len(bestPath)} nodi):"))
+
+        for a in bestPath:
+            self._view.txt_result.controls.append(ft.Text(a.Name))
+
+        self._view.update_page()

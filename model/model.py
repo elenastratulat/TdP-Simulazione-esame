@@ -1,3 +1,4 @@
+import copy
 import itertools
 from collections import defaultdict
 
@@ -11,6 +12,43 @@ class Model:
         self._graph = nx.DiGraph()
         self._idMap = {}
         self._artist = []
+        self._bestPath = []
+
+
+    def getPath(self, source):
+        self._bestPath = []
+
+        partial = [self._idMap[int(source)]]
+
+        for _, v, data in self._graph.out_edges(self._idMap[int(source)], data=True):
+            partial.append(v)
+
+            self._ricorsione(partial, data["weight"])
+            partial.pop()
+
+        return self._bestPath
+
+    def _ricorsione(self, partial,lastWeight):
+        # update best solution
+        if len(partial) > len(self._bestPath):
+            self._bestPath = copy.deepcopy(partial)
+
+        current = partial[-1]
+
+        for _, successor, data in self._graph.out_edges(current, data=True):
+
+            weight = data["weight"]
+
+            # strictly decreasing weights
+            if weight > lastWeight:
+
+                # simple path
+                if successor not in partial:
+                    partial.append(successor)
+
+                    self._ricorsione(partial, weight)
+
+                    partial.pop()
 
     def buildGraph(self, genere):
         self._graph.clear()
